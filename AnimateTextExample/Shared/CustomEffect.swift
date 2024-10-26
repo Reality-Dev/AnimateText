@@ -24,6 +24,18 @@ struct CustomEffect: ATTextAnimateEffect {
         }
     }
     
+    var customSpringAnimation1: Animation {
+        .spring(response: 1.2, dampingFraction: 0.6, blendDuration: 0.9)
+    }
+    
+    var customSpringAnimation2: Animation {
+        .spring(response: 0.3, dampingFraction: 0.6, blendDuration: 0.9)
+    }
+    
+    let elementDelay: TimeInterval = 0.1
+    
+    let lineDelay: TimeInterval = 2.0
+    
     func body(content: Content) -> some View {
         ZStack {
             content
@@ -36,10 +48,11 @@ struct CustomEffect: ATTextAnimateEffect {
                         .border(Color.accentColor.opacity(0.5), width: 1)
                 )
         }
-        .animation(.spring(response: 1.2, dampingFraction: 0.6, blendDuration: 0.9).delay(Double(data.index) * 0.10), value: data.value)
+        .animation(customSpringAnimation1.delay(Double(data.elementIndex) * elementDelay + Double(data.lineIndex) * lineDelay),
+        value: data.value)
         .scaleEffect(data.scale, anchor: .bottom)
         .rotationEffect(Angle(degrees: -360 * data.invValue))
-        .animation(.spring(response: 0.3, dampingFraction: 0.6, blendDuration: 0.9).delay(Double(data.index) * 0.10), value: data.value)
+        .animation(customSpringAnimation2.delay(Double(data.elementIndex) * elementDelay + Double(data.lineIndex) * lineDelay), value: data.value)
     }
 }
 
