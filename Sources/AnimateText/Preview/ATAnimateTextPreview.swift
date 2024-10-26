@@ -40,8 +40,9 @@ public struct ATAnimateTextPreview<E: ATTextAnimateEffect>: View {
         GeometryReader { proxy in
             VStack(alignment: .leading) {
                 Spacer()
-                AnimateText<E>($text, type: type)
-                    .font(.largeTitle)
+                AnimateText<E>($text,
+                               font: .preferredFont(forTextStyle: .largeTitle),
+                               type: type)
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 10)

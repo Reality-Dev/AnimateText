@@ -34,6 +34,7 @@ public enum ATUnitType {
 }
 
 /// A protocol to implement text animation effects.
+@MainActor
 public protocol ATTextAnimateEffect: ViewModifier {
     
     /// Informational data required for each element animation.

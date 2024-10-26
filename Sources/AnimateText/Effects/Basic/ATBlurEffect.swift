@@ -40,7 +40,7 @@ public struct ATBlurEffect: ATTextAnimateEffect {
         content
             .opacity(data.value)
             .blur(radius: 20 - 20 * data.value)
-            .animation(.easeInOut(duration: 0.6).delay(Double(data.index) * 0.06), value: data.value)
+            .animation(.easeInOut(duration: 0.6).delay(Double(data.elementIndex) * 0.06), value: data.value)
     }
 }
 

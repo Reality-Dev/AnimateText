@@ -40,7 +40,7 @@ public struct ATRotateEffect: ATTextAnimateEffect {
         content
             .opacity(data.value)
             .rotationEffect(Angle(degrees: 460 * data.invValue))
-            .animation(.easeInOut.delay(Double(data.index) * 0.06), value: data.value)
+            .animation(.easeInOut.delay(Double(data.elementIndex) * 0.06), value: data.value)
     }
 }
 

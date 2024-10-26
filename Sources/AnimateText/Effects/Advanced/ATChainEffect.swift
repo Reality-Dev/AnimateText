@@ -40,7 +40,7 @@ public struct ATChainEffect: ATTextAnimateEffect {
         content
             .opacity(data.value)
             .rotationEffect(Angle.degrees(-270) * data.invValue, anchor: .topLeading)
-            .animation(.spring().delay(Double(data.index) * 0.08), value: data.value)
+            .animation(.spring().delay(Double(data.elementIndex) * 0.08), value: data.value)
     }
 }
 

@@ -42,9 +42,9 @@ public struct ATTwistEffect: ATTextAnimateEffect {
             .blur(radius: 12 * data.invValue)
             .opacity(data.value)
             .offset(x: 30 * data.invValue, y: -50 * data.invValue)
-            .animation(.easeInOut(duration: 1.0).delay(Double(data.index) * 0.09), value: data.value)
+            .animation(.easeInOut(duration: 1.0).delay(Double(data.elementIndex) * 0.09), value: data.value)
             .rotationEffect(Angle.degrees(360 * data.invValue))
-            .animation(.easeInOut(duration: 1.0).delay(Double(data.index) * 0.11), value: data.value)
+            .animation(.easeInOut(duration: 1.0).delay(Double(data.elementIndex) * 0.11), value: data.value)
     }
 }
 

@@ -31,11 +31,15 @@ public struct AnimateText<E: ATTextAnimateEffect>: View {
     /// Binding the text to be expressed.
     @Binding private var text: String
     
+    var font: UIFont
+    
     /// The type used to split text.
     var type: ATUnitType = .letters
     
     /// Custom user info for the effect.
     var userInfo: Any? = nil
+    
+    @State private var height: CGFloat = 0
     
     /// Split text into individual elements.
     @State private var elements: Array<String> = []
@@ -56,11 +60,15 @@ public struct AnimateText<E: ATTextAnimateEffect>: View {
     ///
     /// - Parameters:
     ///   - text: Bind the text you want to express.
+    ///   - font: The font to use on the text. This is also used to help split lines.
     ///   - type: The type used to split text. `ATUnitType`
     ///   - userInfo: Custom user info for the effect.
-    ///
-    public init(_ text: Binding<String>, type: ATUnitType = .letters, userInfo: Any? = nil) {
+    public init(_ text: Binding<String>,
+                font: UIFont,
+                type: ATUnitType = .letters,
+                userInfo: Any? = nil) {
         _text = text
+        self.font = font
         self.type = type
         self.userInfo = userInfo
     }
@@ -69,27 +77,56 @@ public struct AnimateText<E: ATTextAnimateEffect>: View {
         ZStack(alignment: .leading) {
             if !isChanged {
                 Text(text)
-                    .lineLimit(1)
                     .takeSize($size)
-            }else {
-                HStack(spacing: 0) {
-                    ForEach(Array(elements.enumerated()), id: \.offset) { index, element in
-                        let data = ATElementData(element: element,
-                                                 type: self.type,
-                                                 index: index,
-                                                 count: elements.count,
-                                                 value: value,
-                                                 size: size)
-                        if toggle {
-                            Text(element).modifier(E(data, userInfo))
-                        }else {
-                            Text(element).modifier(E(data, userInfo))
+            .multilineTextAlignment(.center)
+            } else {
+                GeometryReader { geometry in
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(Array(splitElements(containerWidth: geometry.size.width).enumerated()), id: \.offset) { lineIndex, lineElements in
+                            HStack {
+                                Spacer()
+                                HStack(spacing: 0) {
+                                    ForEach(Array(lineElements.enumerated()), id: \.offset) { elementIndex, element in
+                                        let data = ATElementData(element: element,
+                                                                 type: self.type,
+                                                                 elementIndex: elementIndex,
+                                                                 lineIndex: lineIndex,
+                                                                 count: lineElements.count,
+                                                                 value: value,
+                                                                 size: size)
+                                        if toggle {
+                                            Text(element).modifier(E(data, userInfo))
+                                        } else {
+                                            Text(element).modifier(E(data, userInfo))
+                                        }
+                                    }
+                                }
+                                .fixedSize(horizontal: true, vertical: false)
+                                Spacer()
+                            }
+                        }
+                    }
+                    .onAppear {
+                        withAnimation {
+                            height = getHeight(size: geometry.size)
+                        }
+                    }
+                    .onChange(of: geometry.size) { newSize in
+                        withAnimation {
+                            height = getHeight(size: newSize)
+                        }
+                    }
+                    .onChange(of: text) { _ in
+                        withAnimation {
+                            height = getHeight(size: geometry.size)
                         }
                     }
                 }
-                .fixedSize(horizontal: true, vertical: false)
+                .padding(.bottom, 40)
+                .frame(height: height)
             }
         }
+        .font(Font(font))
         .onChange(of: text) { _ in
             withAnimation {
                 value = 0
@@ -103,7 +140,14 @@ public struct AnimateText<E: ATTextAnimateEffect>: View {
         }
     }
     
+    private func getHeight(size: CGSize) -> CGFloat {
+        text.size(withinRect: size.width, font: font).height
+    }
+    
     private func getText(_ text: String) {
+        // Use our own line breaks based on text width, not provided ones.
+        var text = text.replacingOccurrences(of: "\n", with: " ")
+        
         switch type {
         case .letters:
             self.elements = text.map { String($0) }
@@ -117,10 +161,86 @@ public struct AnimateText<E: ATTextAnimateEffect>: View {
             self.elements = elements
         }
     }
+
+func splitElements(containerWidth: CGFloat) -> [[String]] {
+        var lines: [[String]] = [[]]
+        var currentLineIndex = 0
+        var remainingWidth: CGFloat = containerWidth
+        var currentWord: String = ""
+        var words: [String] = []
+        
+        // build words
+        for (index, element) in elements.enumerated() {
+            if element == " " {
+                currentWord.append(element)
+                words.append(currentWord)
+                currentWord = ""
+            } else {
+                // Add the element to the current word
+                currentWord.append(element)
+                
+                // Check if this is the last element
+                if index == elements.count - 1 {
+                    words.append(currentWord)
+                }
+            }
+        }
+        
+        // build sentences, split words into elements
+        for (index, word) in words.enumerated() {
+            var letters: [String] = []
+            for char in word {
+                letters.append(String(char))
+            }
+
+            let wordWidth = word.getTextWidth(font: font)
+            
+            if index == 0 {
+                lines[currentLineIndex].append(contentsOf: letters)
+                remainingWidth -= wordWidth
+            } else {
+                if wordWidth > remainingWidth {
+                    currentLineIndex += 1
+                    lines.append(letters)
+                    remainingWidth = containerWidth - wordWidth
+                } else {
+                    lines[currentLineIndex].append(contentsOf: letters)
+                    remainingWidth -= wordWidth
+                }
+            }
+        }
+        return lines
+    }
 }
 
 struct AnimateText_Previews: PreviewProvider {
     static var previews: some View {
         ATAnimateTextPreview<ATRandomTypoEffect>()
+    }
+}
+
+extension String {
+    func getTextWidth(font: UIFont) -> CGFloat {
+        size(withinRect: .greatestFiniteMagnitude, font: font).width
+    }
+    
+    func getTextHeight(font: UIFont) -> CGFloat {
+        let attributes: [NSAttributedString.Key: Any] = [.font: font]
+        let size = (self as NSString).size(withAttributes: attributes)
+        return size.width
+    }
+        
+    func size(withinRect width: CGFloat, font: UIFont) -> CGSize {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineBreakMode = .byWordWrapping // Ensure text wraps within bounds
+        
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .paragraphStyle: paragraphStyle
+        ]
+        
+        let boundingBox = self.boundingRect(with: CGSize(width: width, height: .greatestFiniteMagnitude), options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: attributes, context: NSStringDrawingContext())
+        
+        return CGSize(width: ceil(boundingBox.width), height: ceil(boundingBox.height)) // Use ceil to avoid fractional sizes
     }
 }

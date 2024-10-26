@@ -35,7 +35,10 @@ public struct ATElementData {
     public let type: ATUnitType
     
     /// The position of Element.
-    public let index: Int
+    public let elementIndex: Int
+    
+    /// The position of Element.
+    public let lineIndex: Int
     
     /// The length of text.
     public let count: Int
@@ -64,7 +67,7 @@ public struct ATElementData {
     /// The value of the position of the current character in the entire text.
     /// A value between 0 and 1.
     public var locValue: Double {
-        return correctValue(Double(index) / Double(count - 1))
+        return correctValue(Double(elementIndex) / Double(count - 1))
     }
     
     /// Correction to a value between 0.001 and 1.0.

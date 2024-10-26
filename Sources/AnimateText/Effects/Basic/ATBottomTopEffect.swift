@@ -40,7 +40,7 @@ public struct ATBottomTopEffect: ATTextAnimateEffect {
         content
             .opacity(data.value)
             .offset(x: 0, y: data.invValue * (data.size.height * 3.6) )
-            .animation(.spring().delay(Double(data.index) * 0.09), value: data.value)
+            .animation(.spring().delay(Double(data.elementIndex) * 0.09), value: data.value)
     }
 }
 

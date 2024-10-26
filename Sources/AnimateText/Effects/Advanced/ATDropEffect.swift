@@ -42,11 +42,11 @@ public struct ATDropEffect: ATTextAnimateEffect {
         content
             .scaleEffect(6 * data.invValue + 1)
             .rotation3DEffect(Angle(degrees: Double.random(in: -270...270) * data.invValue), axis: (x: 0, y: 0, z: 1))
-            .animation(.easeInOut.delay(Double(data.index) * 0.05), value: data.value)
+            .animation(.easeInOut.delay(Double(data.elementIndex) * 0.05), value: data.value)
             .opacity(data.value)
-            .animation(.easeIn.delay(Double(data.index) * 0.05), value: data.value)
+            .animation(.easeIn.delay(Double(data.elementIndex) * 0.05), value: data.value)
             .blur(radius: 26 - 26 * data.value)
-            .animation(.spring().delay(Double(data.index) * 0.05), value: data.value)
+            .animation(.spring().delay(Double(data.elementIndex) * 0.05), value: data.value)
     }
 }
 

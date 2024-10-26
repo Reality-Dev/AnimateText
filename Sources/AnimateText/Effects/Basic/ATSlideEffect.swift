@@ -40,7 +40,7 @@ public struct ATSlideEffect: ATTextAnimateEffect {
         content
             .opacity(data.value)
             .offset(x: data.size.width * data.invValue, y: 0)
-            .animation(.spring().delay(Double(data.index) * 0.05), value: data.value)
+            .animation(.spring().delay(Double(data.elementIndex) * 0.05), value: data.value)
     }
 }
 

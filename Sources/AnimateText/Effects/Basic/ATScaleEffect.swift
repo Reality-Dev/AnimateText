@@ -40,7 +40,7 @@ public struct ATScaleEffect: ATTextAnimateEffect {
         content
             .opacity(data.value)
             .scaleEffect(data.scale)
-            .animation(.easeInOut(duration: 0.4).delay(Double(data.index) * 0.06), value: data.value)
+            .animation(.easeInOut(duration: 0.4).delay(Double(data.elementIndex) * 0.06), value: data.value)
     }
 }
 

@@ -40,7 +40,7 @@ public struct ATOffsetEffect: ATTextAnimateEffect {
         content
             .opacity(data.value)
             .offset(x: 0, y: Double.random(in: -100...100) * data.invValue)
-            .animation(.easeInOut(duration: 0.4).delay(Double(data.index) * 0.06), value: data.value)
+            .animation(.easeInOut(duration: 0.4).delay(Double(data.elementIndex) * 0.06), value: data.value)
     }
 }
 

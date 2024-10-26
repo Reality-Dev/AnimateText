@@ -39,9 +39,9 @@ public struct ATSpringEffect: ATTextAnimateEffect {
     public func body(content: Content) -> some View {
         content
             .opacity(data.value)
-            .animation(.easeIn.delay(Double(data.index) * 0.15), value: data.value)
+            .animation(.easeIn.delay(Double(data.elementIndex) * 0.15), value: data.value)
             .rotation3DEffect(Angle(degrees: 180 * data.invValue), axis: (x: 0, y: 0, z: 1), anchor: .bottom)
-            .animation(.spring(response: 0.5, dampingFraction: 0.4, blendDuration: 0.9).delay(Double(data.index) * 0.12), value: data.value)
+            .animation(.spring(response: 0.5, dampingFraction: 0.4, blendDuration: 0.9).delay(Double(data.elementIndex) * 0.12), value: data.value)
     }
 }
 
