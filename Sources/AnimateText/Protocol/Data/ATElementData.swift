@@ -34,10 +34,10 @@ public struct ATElementData {
     /// The type used to split text.
     public let type: ATUnitType
     
-    /// The position of Element.
+    /// The position of `element`.
     public let elementIndex: Int
     
-    /// The position of Element.
+    /// The index of the line that `element` is in.
     public let lineIndex: Int
     
     /// The length of text.
